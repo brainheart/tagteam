@@ -46,5 +46,25 @@ class InputSource < ActiveRecord::Base
   def self.title
     'Remixed Feed Item Source'
   end
-  
+
+  # Named scopes
+  def self.inputs
+    where(:effect => 'add')
+  end
+
+  def self.removals
+    where(:effect => 'remove')
+  end
+
+  def self.feeds
+    where(:item_source_type => 'Feed')
+  end
+
+  def self.feed_items
+    where(:item_source_type => 'FeedItem')
+  end
+
+  def self.tags
+    where(:item_source_type => 'ActsAsTaggableOn::Tag')
+  end
 end

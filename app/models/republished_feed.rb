@@ -40,74 +40,34 @@ class RepublishedFeed < ActiveRecord::Base
     t.add :input_sources
   end
 
-  # All InputSource objects that add FeedItems to this RepublishedFeed.
-  def inputs
-    input_sources.where(:effect => 'add') 
-  end
-
-  # All InputSource objects that remove FeedItems from this RepublishedFeed.
-  def removals
-    input_sources.where(:effect => 'remove') 
-  end
-
   # Create a set of arrays that define additions and removals to create a paginated Sunspot query.
   def item_search
-
-    add_feeds = []
-    add_feed_items = []
-    add_tags = []
-
-    remove_feeds = []
-    remove_feed_items = []
-    remove_tags = []
-
-    if self.input_sources.blank?
+    if input_sources.blank?
       return nil
     end
 
-    self.input_sources.each do|input_source|
-      if input_source.effect == 'add'
-          case input_source.item_source_type
-          when 'Feed'
-              add_feeds << input_source.item_source_id
-          when 'FeedItem'
-              add_feed_items << input_source.item_source_id
-          when 'ActsAsTaggableOn::Tag'
-              add_tags << ActsAsTaggableOn::Tag.find(input_source.item_source_id)
-          end
-      else
-          case input_source.item_source_type
-          when 'Feed'
-              remove_feeds << input_source.item_source_id
-          when 'FeedItem'
-              remove_feed_items << input_source.item_source_id
-          when 'ActsAsTaggableOn::Tag'
-              remove_tags << ActsAsTaggableOn::Tag.find(input_source.item_source_id)
-          end
-      end
-    end
-
+    # Use input sources to build search, must map ids
     search = FeedItem.search(:include => [:tags, :taggings, :feeds, :hub_feeds]) do
       any_of do
-        unless add_feeds.blank?
-          with(:feed_ids, add_feeds)
+        unless input_feeds.blank?
+          with(:feed_ids, input_feeds.collect(&:id))
         end
-        unless add_feed_items.blank?
-          with(:id, add_feed_items)
+        unless input_feed_items.blank?
+          with(:id, input_feed_items.collect(&:id))
         end
-        unless add_tags.blank?
-          with(:tag_contexts, add_tags.collect{|t| "hub_#{self.hub_id}-#{t.name}"})
+        unless input_tags.blank?
+          with(:tag_contexts, input_tags.collect{|t| "hub_#{self.hub_id}-#{t.name}"})
         end
       end
       any_of do
-        unless remove_feeds.blank?
-          without(:feed_ids, remove_feeds)
+        unless removal_feeds.blank?
+          without(:feed_ids, removal_feeds.collect(&:id))
         end
-        unless remove_feed_items.blank?
-          without(:id, remove_feed_items)
+        unless removal_feed_items.blank?
+          without(:id, removal_feed_items.collect(&:id))
         end
-        unless remove_tags.blank?
-          without(:tag_contexts, remove_tags.collect{|t| "hub_#{self.hub_id}-#{t.name}"})
+        unless removal_tags.blank?
+          without(:tag_contexts, removal_tags.collect{|t| "hub_#{self.hub_id}-#{t.name}"})
         end
       end
       order_by('date_published', :desc)
@@ -124,6 +84,30 @@ class RepublishedFeed < ActiveRecord::Base
 
   def self.title
     'Remixed feed'
+  end
+
+  def input_tags
+    @input_tags ||= input_sources.inputs.tags.map{ |i| i.item_source }
+  end
+
+  def removal_tags
+    @removal_tals ||= input_sources.removals.tags.map{ |i| i.item_source }
+  end
+
+  def input_feeds
+    @input_feeds ||= input_sources.inputs.feeds.map{ |i| i.item_source }
+  end
+
+  def removal_feeds
+    @removal_feeds ||= input_sources.removals.feeds.map{ |i| i.item_source }
+  end
+
+  def input_feed_items
+    @input_feed_items ||= input_sources.inputs.feed_items.map{ |i| i.item_source }
+  end
+
+  def removal_feed_items
+    @removal_feed_items ||= input_sources.removals.feed_items.map{ |i| i.item_source }
   end
 
 end
