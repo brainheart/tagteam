@@ -12,42 +12,48 @@ class InputSourcesController < ApplicationController
   end
 
   def new
-    @input_source = InputSource.new(:effect => params[:effect])
+    @input_source = InputSource.new(params[:input_source])
     #ok because we're using ACL9 to protect this method.
-    @input_source.republished_feed_id = params[:republished_feed_id]
+    @input_source.republished_feed_id = params[:input_source][:republished_feed_id]
+    respond_to do |format|
+      format.html do
+        if request.xhr?
+          render :layout => nil
+        end
+      end
+    end
   end
 
   def create
-    @input_source = InputSource.new()
-    @input_source.attributes = params[:input_source]
-    if @input_source.item_source_type == 'Tag'
-      @input_source.item_source_type = 'ActsAsTaggableOn::Tag'
-    end
-
-    #ok because we're using ACL9 to protect this method.
-    @input_source.republished_feed_id = params[:input_source][:republished_feed_id]
-
+    @input_source_creator = InputSourceCreator.new(params[:input_source])
+    @input_source = @input_source_creator.input_source
     respond_to do|format|
-      if @input_source.save
-        current_user.has_role!(:owner, @input_source)
-        current_user.has_role!(:creator, @input_source)
-        flash[:notice] = 'Add that input source'
+      if @input_source_creator.save(current_user)
+        @message = (@input_source.effect == 'add') ? %Q|Added "#{@input_source.item_source}" to "#{@republished_feed}"| : %Q|Removed "#{@input_source.item_source}" from "#{@republished_feed}"|
         format.html{
           unless request.xhr?
+            flash[:notice] = @message
             redirect_to hub_republished_feed_url(@hub,@republished_feed)
           else
-            message = (@input_source.effect == 'add') ? %Q|Added "#{@input_source.item_source}" to "#{@republished_feed}"| : %Q|Removed "#{@input_source.item_source}" from "#{@republished_feed}"|
-            render :text => message 
+            render :text => @message 
           end
         }
+        format.js
       else
-        flash[:error] = 'Could not add that input source'
+        @input_source = @input_source_creator.input_source
+        Rails.logger.debug @input_source.inspect
+        Rails.logger.debug @input_source.errors.inspect
+        @message = %Q|Could not add that input source for the following reasons:<br />#{@input_source.errors.full_messages.join('<br/>')}|
         format.html {
           unless request.xhr?
+            flash[:error] = @message
             render :action => :new
           else 
-            render :text => %Q|Could not add that input source. <br />#{@input_source.errors.full_messages.join('<br/>')} Sorry!|, :status => :unprocessable_entity
+            render :text => @message, :status => :unprocessable_entity
           end
+        }
+        format.js {
+          render :action => :new, :formats => [:js]
         }
       end
     end

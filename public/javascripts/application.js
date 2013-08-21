@@ -753,8 +753,8 @@ $(document).ready(function(){
       $.ajax({
         cache: false,
         dataType: 'html',
-        url: $.rootPath() + 'input_sources',
-        type: 'post',
+        url: $.rootPath() + 'input_sources/new',
+        type: 'get',
         data:{ input_source: {republished_feed_id: republished_feed_id, item_source_type: item_source_type, item_source_id: item_source_id, effect: item_effect}},
         beforeSend: function(){ 
           $.showSpinner();

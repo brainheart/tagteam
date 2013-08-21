@@ -49,12 +49,12 @@
           <section class="grid_16 notices" id="notices">
             <% unless flash[:notice].blank? %>
               <div class="notice">
-                <%= flash[:notice] %>
+                <%= raw flash[:notice] %>
               </div>
             <% end %>
             <% unless flash[:error].blank? %>
               <div class="error">
-                <%= flash[:error] %>
+                <%= raw flash[:error] %>
               </div>
             <% end %>
             <% unless flash[:alert].blank? %>

@@ -1,7 +1,7 @@
 <%= documentation('republished-feed-inputs-tab') %>
 <h3>Inputs</h3>
 <p>The feeds, tags, searches, and items below serve as the sources used to create this feed.</p>
-<%= render :partial => 'shared/line_items/input_source', :collection => @republished_feed.input_sources.reject{|ins| ins.effect != 'add'}, :locals => {:effect => 'add'} %>
+<%= render :partial => 'shared/line_items/manage_input_source', :collection => @republished_feed.input_sources.inputs, :as => :input_source %>
 <% if current_user && current_user.is?(:owner, @republished_feed) %>
   <p>Add new inputs to this remixed feed by using the controls throughout this hub.</p>
 <% end %>

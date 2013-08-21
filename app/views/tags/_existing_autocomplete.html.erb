@@ -1,0 +1,7 @@
+<% tags.each do |input_tag| %>
+  <span class='search_select tag'>
+    <input name='republished_feed[input_tag_ids][]' type='hidden' value='<%=input_tag.id%>'>
+    <%= input_tag.name %>
+    <span class="search_select_control"> X </span>
+  </span>
+<% end %>

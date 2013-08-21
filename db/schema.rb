@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20120713184742) do
+ActiveRecord::Schema.define(:version => 20130821140614) do
 
   create_table "add_tag_filters", :force => true do |t|
     t.integer  "tag_id"
@@ -185,6 +185,7 @@ ActiveRecord::Schema.define(:version => 20120713184742) do
     t.integer  "limit"
     t.datetime "created_at",                                            :null => false
     t.datetime "updated_at",                                            :null => false
+    t.string   "matching"
   end
 
   add_index "input_sources", ["effect"], :name => "index_input_sources_on_effect"
