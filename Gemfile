@@ -31,7 +31,6 @@ group :development, :test do
   gem 'sqlite3'
   gem 'silent-postgres'
   gem 'progress_bar'
-  gem 'zeus'
   gem 'debugger'
 end
 
