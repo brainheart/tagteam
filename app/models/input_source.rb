@@ -51,6 +51,14 @@ class InputSource < ActiveRecord::Base
   end
 
   # Named scopes
+  def self.match_any
+    where(:matching => 'any')
+  end
+
+  def self.match_all
+    where(:matching => 'all')
+  end
+
   def self.inputs
     where(:effect => 'add')
   end

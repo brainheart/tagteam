@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130821140614) do
+ActiveRecord::Schema.define(:version => 20130821163307) do
 
   create_table "add_tag_filters", :force => true do |t|
     t.integer  "tag_id"

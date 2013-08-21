@@ -11,7 +11,7 @@
         <%= render 'shared/line_items/input_source', :input_source => @input_source, :hub => @input_source.republished_feed.hub %>
       </li>
 
-      <%= f.input :matching, :collection => InputSource::MATCHINGS, :hint => '"May"' %>
+      <%= f.input :matching, :collection => InputSource::MATCHINGS, :hint => '"Any" means that this input source will be searched for using the boolean OR statement. "All" means that this input source will be searched for using the boolean AND statement.' %>
       <%= f.input :effect, :collection => InputSource::EFFECTS, :hint => '"Add" means this input source adds its items to this republished feed. "Remove" means this input source is used to remove items it matches.' %>
       <%= f.input :limit, :hint => 'How many maximum items to pull from this source?'  %>
     <% end %>

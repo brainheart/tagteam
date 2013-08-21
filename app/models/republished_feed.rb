@@ -48,28 +48,22 @@ class RepublishedFeed < ActiveRecord::Base
 
     # Use input sources to build search, must map ids
     search = FeedItem.search(:include => [:tags, :taggings, :feeds, :hub_feeds]) do
-      any_of do
-        unless input_feeds.blank?
-          with(:feed_ids, input_feeds.collect(&:id))
-        end
-        unless input_feed_items.blank?
-          with(:id, input_feed_items.collect(&:id))
-        end
-        unless input_tags.blank?
-          with(:tag_contexts, input_tags.collect{|t| "hub_#{self.hub_id}-#{t.name}"})
-        end
-      end
-      any_of do
-        unless removal_feeds.blank?
-          without(:feed_ids, removal_feeds.collect(&:id))
-        end
-        unless removal_feed_items.blank?
-          without(:id, removal_feed_items.collect(&:id))
-        end
-        unless removal_tags.blank?
-          without(:tag_contexts, removal_tags.collect{|t| "hub_#{self.hub_id}-#{t.name}"})
-        end
-      end
+      with(:feed_ids).any_of(any_input_feeds.collect(&:id)) unless any_input_feeds.blank?
+      with(:id).any_of(any_input_feed_items.collect(&:id)) unless any_input_feed_items.blank?
+      with(:tag_contexts).any_off(any_input_tags.collect{|t| "hub_#{self.hub_id}-#{t.name}"}) unless any_input_tags.blank?
+
+      without(:feed_ids).any_of(any_removal_feeds.collect(&:id)) unless any_removal_feeds.blank?
+      without(:id).any_of(any_removal_feed_items.collect(&:id)) unless any_removal_feed_items.blank?
+      without(:tag_contexts).any_of(any_removal_tags.collect{|t| "hub_#{self.hub_id}-#{t.name}"}) unless any_removal_tags.blank?
+
+      with(:feed_ids).all_of(all_input_feeds.collect(&:id)) unless all_input_feeds.blank?
+      with(:id).all_of(all_input_feed_items.collect(&:id)) unless all_input_feed_items.blank?
+      with(:tag_contexts).all_of(all_input_tags.collect{|t| "hub_#{self.hub_id}-#{t.name}"}) unless all_input_tags.blank?
+
+      without(:feed_ids).all_of(all_removal_feeds.collect(&:id)) unless all_removal_feeds.blank?
+      without(:id).all_of(all_removal_feed_items.collect(&:id)) unless all_removal_feed_items.blank?
+      without(:tag_contexts).all_of(all_removal_tags.collect{|t| "hub_#{self.hub_id}-#{t.name}"}) unless all_removal_tags.blank?
+
       order_by('date_published', :desc)
       paginate :per_page => self.limit, :page => 1
     end
@@ -86,28 +80,52 @@ class RepublishedFeed < ActiveRecord::Base
     'Remixed feed'
   end
 
-  def input_tags
-    @input_tags ||= input_sources.inputs.tags.map{ |i| i.item_source }
+  def all_input_tags
+    @all_input_tags ||= input_sources.match_all.inputs.tags.map{ |i| i.item_source }
   end
 
-  def removal_tags
-    @removal_tals ||= input_sources.removals.tags.map{ |i| i.item_source }
+  def all_removal_tags
+    @all_removal_tals ||= input_sources.match_all.removals.tags.map{ |i| i.item_source }
   end
 
-  def input_feeds
-    @input_feeds ||= input_sources.inputs.feeds.map{ |i| i.item_source }
+  def all_input_feeds
+    @all_input_feeds ||= input_sources.match_all.inputs.feeds.map{ |i| i.item_source }
   end
 
-  def removal_feeds
-    @removal_feeds ||= input_sources.removals.feeds.map{ |i| i.item_source }
+  def all_removal_feeds
+    @all_removal_feeds ||= input_sources.match_all.removals.feeds.map{ |i| i.item_source }
   end
 
-  def input_feed_items
-    @input_feed_items ||= input_sources.inputs.feed_items.map{ |i| i.item_source }
+  def all_input_feed_items
+    @all_input_feed_items ||= input_sources.match_all.inputs.feed_items.map{ |i| i.item_source }
   end
 
-  def removal_feed_items
-    @removal_feed_items ||= input_sources.removals.feed_items.map{ |i| i.item_source }
+  def all_removal_feed_items
+    @all_removal_feed_items ||= input_sources.match_all.removals.feed_items.map{ |i| i.item_source }
+  end
+
+  def any_input_tags
+    @any_input_tags ||= input_sources.match_any.inputs.tags.map{ |i| i.item_source }
+  end
+
+  def any_removal_tags
+    @any_removal_tals ||= input_sources.match_any.removals.tags.map{ |i| i.item_source }
+  end
+
+  def any_input_feeds
+    @any_input_feeds ||= input_sources.match_any.inputs.feeds.map{ |i| i.item_source }
+  end
+
+  def any_removal_feeds
+    @any_removal_feeds ||= input_sources.match_any.removals.feeds.map{ |i| i.item_source }
+  end
+
+  def any_input_feed_items
+    @any_input_feed_items ||= input_sources.match_any.inputs.feed_items.map{ |i| i.item_source }
+  end
+
+  def any_removal_feed_items
+    @any_removal_feed_items ||= input_sources.match_any.removals.feed_items.map{ |i| i.item_source }
   end
 
 end

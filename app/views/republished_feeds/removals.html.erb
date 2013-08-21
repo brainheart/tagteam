@@ -1,7 +1,10 @@
 <%= documentation('republished-feed-removals-tab') %>
 <h3>Remove</h3>
 <p>The feeds, tags, searches and items below are removed from this feed before publishing.</p>
-<%= render :partial => 'shared/line_items/manage_input_source', :collection => @republished_feed.input_sources.removals, :as => :input_source %>
+<h4>Must match all:</h4>
+<%= render :partial => 'shared/line_items/manage_input_source', :collection => @republished_feed.input_sources.removals.match_all, :as => :input_source %>
+<h4>Can match any:</h4>
+<%= render :partial => 'shared/line_items/manage_input_source', :collection => @republished_feed.input_sources.removals.match_any, :as => :input_source %>
 <% if current_user && current_user.is?(:owner, @republished_feed) %>
   <p>Remove items from this remixed feed by using the controls throughout this hub.</p>
 <% end %>
