@@ -69,6 +69,11 @@ class RepublishedFeedsController < ApplicationController
     render :layout => ! request.xhr?
   end
 
+  # The explicit search terms for this RepublishedFeed.
+  def search
+    render :layout => ! request.xhr?
+  end
+
   def new
     @republished_feed = RepublishedFeed.new(:hub_id => @hub.id)
   end

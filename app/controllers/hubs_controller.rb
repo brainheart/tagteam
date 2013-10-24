@@ -466,6 +466,8 @@ class HubsController < ApplicationController
     end
 
     @search.execute!
+    # TODO: Reason we have to go back and switch this is because doing gsub!
+    # just do gsub, and won't have to undo this change
     unless params[:q].blank?
         params[:q].gsub! "tag_contexts_sm:#{@hub.tagging_key}-", '#'
     end

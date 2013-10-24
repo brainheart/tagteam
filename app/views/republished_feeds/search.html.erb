@@ -1,0 +1,9 @@
+<h1>Advanced Search</h1>
+<%= semantic_form_for([@hub,@republished_feed]) do |f| %>
+  <%= f.inputs do %>
+    <%= f.input :search_term %>
+  <% end %>
+  <%= f.actions do %>
+    <%= f.action :submit,  :label => (f.object.new_record?) ? 'Create new remixed feed' : 'Update this remixed feed'  %>
+  <% end %>
+<% end %>

@@ -19,7 +19,7 @@ class RepublishedFeed < ActiveRecord::Base
     c.allow_jsonp_callback = true
   end
 
-  attr_accessible :title, :hub_id, :description, :limit, :url_key
+  attr_accessible :title, :hub_id, :description, :limit, :url_key, :search_term
 
   SORTS = ['date_published', 'title']
   SORTS_FOR_SELECT = [['Date Published','date_published' ],['Title', 'title']]
@@ -63,6 +63,13 @@ class RepublishedFeed < ActiveRecord::Base
       without(:feed_ids).all_of(all_removal_feeds.collect(&:id)) unless all_removal_feeds.blank?
       without(:id).all_of(all_removal_feed_items.collect(&:id)) unless all_removal_feed_items.blank?
       without(:tag_contexts).all_of(all_removal_tags.collect{|t| "hub_#{self.hub_id}-#{t.name}"}) unless all_removal_tags.blank?
+
+      unless search_term.blank?
+        fulltext search_term
+        adjust_solr_params do |params|
+          params[:q].gsub! '#', "tag_contexts_sm:hub_#{self.hub_id}-"
+        end
+      end
 
       order_by('date_published', :desc)
       paginate :per_page => self.limit, :page => 1
