@@ -38,7 +38,7 @@ Tagteam::Application.configure do
   config.action_mailer.delivery_method = :sendmail
   config.action_mailer.default_url_options = {
                                                :host => config.hostname,
-                                               :port => config.hostport
+                                               :port => 80 #config.hostport
                                              }
 
 end
