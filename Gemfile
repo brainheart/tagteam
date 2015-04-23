@@ -32,7 +32,8 @@ gem 'formtastic-bootstrap', git: 'https://github.com/mjbellantoni/formtastic-boo
 group :development, :test do
   gem 'awesome_print'
   gem 'sqlite3'
-  gem 'therubyracer', :platform => :ruby
+  gem 'execjs'
+  gem 'therubyracer', :platforms => :ruby
 end
 
 group :test do

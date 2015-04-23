@@ -90,6 +90,7 @@ GEM
     erubis (2.7.0)
     exception_notification (2.6.1)
       actionmailer (>= 3.0.4)
+    execjs (2.5.2)
     feed-abstract (0.0.13)
     font-awesome-rails (4.2.0.0)
       railties (>= 3.2, < 5.0)
@@ -261,6 +262,7 @@ DEPENDENCIES
   database_cleaner
   devise (~> 2.0)
   exception_notification (~> 2.6.1)
+  execjs
   feed-abstract (~> 0.0.13)
   font-awesome-rails
   formtastic
